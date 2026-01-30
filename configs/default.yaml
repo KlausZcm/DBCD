@@ -1,0 +1,69 @@
+# ==============================================================================
+# DBCD Configuration File
+# ==============================================================================
+
+# ----------------- 1. Dataset & Paths -----------------
+dataset:
+    name: "potsdam"  # 'vaihingen' or 'potsdam'
+    raw_data_dir: "./raw_data"  # Path to raw GeoTIFFs
+    processed_dir: "./processed_data"  # Path to save patches
+
+    # Patch Generation
+    patch_size: 256
+    train_stride: 256
+    test_stride: 128  # 50% overlap for inference
+
+    # SpPre & Filtering (Paper Table I & IV.D)
+    # Potsdam: Only retain high-confidence patches (approx 25.2%)
+    use_filtering: True
+    sppre_params:
+        rho_fine: 100
+        rho_coarse: 400
+        tau: 0.35
+        sigma_scale: 0.2
+
+# ----------------- 2. Model Architecture -----------------
+model:
+    dim: 64
+    channels: 3
+    out_dim: 1
+    dim_mults: [1, 2, 4, 8]
+    with_time_emb: True
+
+# ----------------- 3. Diffusion Process -----------------
+diffusion:
+    timesteps: 1000  # Training steps
+    sampling_steps: 100  # DDIM Inference steps (Paper IV.F)
+    beta_schedule: "linear"
+    beta_start: 0.0001
+    beta_end: 0.02
+
+# ----------------- 4. Training Hyperparameters -----------------
+train:
+    seed: 42  # Deterministic reproducibility
+    batch_size: 4  # 8 for Vaihingen, 4 for Potsdam (Paper IV.C)
+    num_iterations: 20000  # Total iterations (Paper IV.C)
+    learning_rate: 3.0e-4
+    weight_decay: 1.0e-4
+
+    # Dynamic Loss Weights (Curriculum Learning - Paper Eq. 14)
+    # lambda1 (Contrastive) decays: max -> 0
+    # lambda2 (Diffusion) grows: min -> max
+    loss_weights:
+        lambda_max: 1.0
+        lambda_min: 0.2
+        beta_decay: 0.05
+        edge_weight: 0.5  # alpha in Eq. 13
+
+# Augmentation
+    aug:
+        gaussian_blur_sigma: 1.5
+        prob_flip: 0.5
+        prob_rotate: 0.5
+
+# ----------------- 5. Inference -----------------
+inference:
+    checkpoint_path: "./checkpoints/best_model.pth"
+    output_dir: "./results"
+    window_overlap: 0.5  # 50% overlap
+    threshold: 0.5  # Binary threshold
