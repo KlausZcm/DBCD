@@ -52,8 +52,9 @@ train:
     loss_weights:
         lambda_max: 1.0
         lambda_min: 0.2
+        lambda_reg: 0.1
         beta_decay: 0.05
-        edge_weight: 0.5  # alpha in Eq. 13
+        edge_weight: 0.5  
 
 # Augmentation
     aug:
