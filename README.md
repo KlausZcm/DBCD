@@ -8,7 +8,6 @@ This repository contains the official PyTorch implementation of the paper: **"DB
 DBCD is a novel unsupervised framework that tackles feature entanglement and boundary inconsistency in remote sensing building extraction. It integrates a **Conditional Branch** (driven by superpixel priors) and a **Diffusion Branch** (driven by edge-aware geometric constraints) via a dynamic contrastive learning mechanism.
 
 ![Framework Architecture](assets/framework.png)
-*(Note: Please ensure `assets/framework.png` exists in your repository)*
 
 ## 🌟 Key Features
 
